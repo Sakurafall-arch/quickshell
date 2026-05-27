@@ -4,6 +4,7 @@ import QtQuick.Controls
 import Quickshell
 import qs.Common
 import qs.Services
+import qs.Components
 
 Item {
     id: root
@@ -60,8 +61,10 @@ Item {
             width: 48; height: 48; radius: 24
             color: sliderCol.expanded ? Appearance.colors.colPrimary : Appearance.colors.colLayer4
             Behavior on color { ColorAnimation { duration: 250 } }
-            Text {
-                anchors.centerIn: parent; text: sliderCol.icon; font.family: "Font Awesome 6 Free Solid"; font.pixelSize: 18
+            MaterialSymbol {
+                anchors.centerIn: parent
+                text: sliderCol.icon
+                iconSize: 22
                 color: sliderCol.expanded ? Appearance.colors.colOnPrimary : Appearance.colors.colOnSurface
             }
             MouseArea { 
@@ -76,14 +79,34 @@ Item {
             
             Item {
                 anchors.centerIn: parent; width: 16; height: parent.height - 4; clip: true
-                Rectangle {
-                    anchors.fill: parent; radius: 8; color: Appearance.colors.colLayer0
+                Item {
+                    id: verticalTrack
+                    anchors.centerIn: parent
+                    width: 6
+                    height: parent.height - 8
+
+                    readonly property real splitY: vSlider.visualPosition * height
+                    readonly property real gapHeight: 10
+                    readonly property real topTrackHeight: Math.max(0, splitY - gapHeight / 2)
+                    readonly property real fillY: Math.min(height, splitY + gapHeight / 2)
+                    readonly property real fillHeight: Math.max(0, height - fillY)
+
                     Rectangle {
-                        x: parent.width / 2 - width / 2; y: 4; width: 4; height: parent.height - 8; radius: 2; color: Appearance.colors.colLayer4
-                        Rectangle {
-                            width: parent.width; height: (1.0 - vSlider.visualPosition) * parent.height; y: vSlider.visualPosition * parent.height
-                            radius: 2; color: Appearance.colors.colPrimary
-                        }
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        y: 0
+                        width: parent.width
+                        height: verticalTrack.topTrackHeight
+                        radius: width / 2
+                        color: Appearance.colors.colLayer4
+                    }
+
+                    Rectangle {
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        y: verticalTrack.fillY
+                        width: parent.width
+                        height: verticalTrack.fillHeight
+                        radius: width / 2
+                        color: Appearance.colors.colPrimary
                     }
                 }
             }
@@ -125,9 +148,9 @@ Item {
         // 第一列：滑块
         ColumnLayout {
             z: 100; Layout.preferredWidth: 48; Layout.fillHeight: true; Layout.alignment: Qt.AlignTop; spacing: 12
-            ExpandableVertSlider { sliderIndex: 0; icon: ""; expanded: root.activeSliderIndex === 0; sliderValue: Volume.sinkVolume; onSliderMoved: (val) => Volume.setSinkVolume(val) } 
-            ExpandableVertSlider { sliderIndex: 1; icon: ""; expanded: root.activeSliderIndex === 1; sliderValue: Volume.sourceVolume; onSliderMoved: (val) => Volume.setSourceVolume(val) }
-            ExpandableVertSlider { sliderIndex: 2; icon: ""; expanded: root.activeSliderIndex === 2; sliderValue: Brightness.brightnessValue; onSliderMoved: (val) => Brightness.setBrightness(val) }
+            ExpandableVertSlider { sliderIndex: 0; icon: "volume_up"; expanded: root.activeSliderIndex === 0; sliderValue: Volume.sinkVolume; onSliderMoved: (val) => Volume.setSinkVolume(val) } 
+            ExpandableVertSlider { sliderIndex: 1; icon: "mic"; expanded: root.activeSliderIndex === 1; sliderValue: Volume.sourceVolume; onSliderMoved: (val) => Volume.setSourceVolume(val) }
+            ExpandableVertSlider { sliderIndex: 2; icon: "brightness_medium"; expanded: root.activeSliderIndex === 2; sliderValue: Brightness.brightnessValue; onSliderMoved: (val) => Brightness.setBrightness(val) }
             Item { Layout.fillHeight: true } 
         }
 

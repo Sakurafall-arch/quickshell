@@ -371,9 +371,11 @@ Variants {
                     }
                 }
 
-                PwObjectTracker { objects: [ Pipewire.defaultAudioSink ] }
+                PwObjectTracker { objects: [ Pipewire.defaultAudioSink, Pipewire.defaultAudioSource ] }
                
                 property var audioNode: Pipewire.defaultAudioSink ? Pipewire.defaultAudioSink.audio : null
+                property var sourceAudioNode: Pipewire.defaultAudioSource ? Pipewire.defaultAudioSource.audio : null
+                property string sliderMode: "volume"
 
                 Timer { 
                     id: volHideTimer
@@ -386,13 +388,29 @@ Variants {
             
                 Connections {
                     target: root.audioNode; ignoreUnknownSignals: true
-                    function onVolumeChanged() { root.triggerVolumeOSD() } 
-                    function onMutedChanged() { root.triggerVolumeOSD() }  
+                    function onVolumeChanged() { root.triggerSliderOSD("volume") } 
+                    function onMutedChanged() { root.triggerSliderOSD("volume") }  
                 }
-            
-                function triggerVolumeOSD() {
+
+                Connections {
+                    target: root.sourceAudioNode; ignoreUnknownSignals: true
+                    function onVolumeChanged() { root.triggerSliderOSD("mic") }
+                    function onMutedChanged() { root.triggerSliderOSD("mic") }
+                }
+
+                Connections {
+                    target: Brightness
+                    function onBrightnessChanged() { root.triggerSliderOSD("brightness") }
+                }
+
+                function triggerSliderOSD(mode) {
                     if (root.showHub || root.showTools || root.showAudio || root.expanded || root.showLyrics) return
+                    root.sliderMode = mode
                     root.showVolume = true; volHideTimer.restart()
+                }
+
+                function triggerVolumeOSD() {
+                    root.triggerSliderOSD("volume")
                 }
                 
                 property var currentPlayer: null
@@ -473,9 +491,17 @@ Variants {
                         width: root.volW
                         height: root.volH
 
-                        audioNode: root.audioNode
+                        mode: root.sliderMode
+                        audioNode: root.sliderMode === "volume" ? root.audioNode : root.sliderMode === "mic" ? root.sourceAudioNode : null
+                        externalValue: Brightness.brightnessValue
+                        iconName: root.sliderMode === "brightness" ? "brightness_medium" : ""
                         opacity: root.isVolumeMode ? 1 : 0
                         visible: opacity > 0.01; Behavior on opacity { NumberAnimation { duration: 200 } } 
+
+                        onMoved: value => {
+                            if (root.sliderMode === "brightness")
+                                Brightness.setBrightness(value);
+                        }
                     }
                         
                     NotificationContent { 
