@@ -281,7 +281,7 @@ Item {
                         Text {
                             width: parent.width
                             text: root.previewWeatherText
-                            color: Appearance.colors.colOnSurface
+                            color: Appearance.colors.colOnImage
                             font.family: "LXGW WenKai GB Screen"
                             font.pixelSize: 26
                             font.bold: true
@@ -300,7 +300,7 @@ Item {
                                 anchors.left: parent.left
                                 anchors.bottom: parent.bottom
                                 text: fmtTempPlain(root.previewTemperatureC)
-                                color: Appearance.colors.colOnSurface
+                                color: Appearance.colors.colOnImage
                                 font.family: "JetBrainsMono Nerd Font"
                                 font.pixelSize: 132
                                 font.bold: true
@@ -322,7 +322,7 @@ Item {
                         Text {
                             width: parent.width
                             text: "体感温度: " + fmtTemp(root.previewFeelsLikeC)
-                            color: Appearance.colors.colOnSurface
+                            color: Appearance.colors.colOnImage
                             font.family: "LXGW WenKai GB Screen"
                             font.pixelSize: 18
                             horizontalAlignment: Text.AlignHCenter
@@ -333,7 +333,7 @@ Item {
                             width: parent.width
                             text: "最高 " + fmtTemp(root.previewHighC)
                                   + " · 最低 " + fmtTemp(root.previewLowC)
-                            color: Appearance.colors.colOnSurface
+                            color: Appearance.colors.colOnImage
                             font.family: "LXGW WenKai GB Screen"
                             font.pixelSize: 18
                             horizontalAlignment: Text.AlignHCenter

@@ -50,7 +50,7 @@ Item {
             text: root.effectiveIconName
             iconSize: 24
             fill: root.isMuted ? 1 : 0
-            color: "white"
+            color: Appearance.colors.colOnLayer0
             Layout.alignment: Qt.AlignVCenter
 
             MouseArea {
@@ -87,7 +87,7 @@ Item {
                 width: track.leftWidth
                 height: parent.height
                 radius: 3
-                color: "white"
+                color: Appearance.colors.colOnLayer0
                 
                 Behavior on width { 
                     enabled: !dragArea.pressed
@@ -102,7 +102,7 @@ Item {
                 width: track.rightWidth
                 height: parent.height
                 radius: 3
-                color: Qt.rgba(1, 1, 1, 0.2)
+                color: Appearance.applyAlpha(Appearance.colors.colOnLayer0, 0.22)
 
                 Behavior on x {
                     enabled: !dragArea.pressed
@@ -143,7 +143,7 @@ Item {
 
         Text {
             text: Math.round(root.displayVolume * 100)
-            color: "white" 
+            color: Appearance.colors.colOnLayer0
             font.pixelSize: 15
             font.bold: true
             font.family: "JetBrainsMono Nerd Font" 

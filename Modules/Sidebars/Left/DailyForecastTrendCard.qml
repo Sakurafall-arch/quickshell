@@ -13,7 +13,7 @@ Rectangle {
     property int currentTab: 0
 
     radius: 26
-    color: Qt.rgba(0.10, 0.12, 0.13, 0.985)
+    color: Appearance.colors.colWeatherCardSurface
     border.width: 1
     border.color: Qt.rgba(Appearance.colors.colOutlineVariant.r, Appearance.colors.colOutlineVariant.g, Appearance.colors.colOutlineVariant.b, 0.42)
     clip: true

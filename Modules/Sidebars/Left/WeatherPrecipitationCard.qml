@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Shapes
+import qs.Common
 
 WeatherInsightCard {
     id: root
@@ -11,15 +12,15 @@ WeatherInsightCard {
     readonly property string displayValue: parsedValue.number
     readonly property string displayUnit: localizedUnit(parsedValue.unit)
     readonly property string footerText: normalizedDescription(descriptionText)
-    readonly property color ink: Qt.rgba(0.96, 0.95, 0.97, 0.95)
-    readonly property color mutedInk: Qt.rgba(0.90, 0.88, 0.92, 0.92)
+    readonly property color ink: Appearance.colors.colOnWeatherCardSurface
+    readonly property color mutedInk: Appearance.colors.colOnWeatherCardSurfaceVariant
     readonly property real valueNumberSize: Math.round(width * 0.28)
     readonly property real valueUnitSize: Math.round(width * 0.12)
 
     icon: ""
     title: ""
     radius: 42
-    color: Qt.rgba(0.10, 0.12, 0.13, 0.98)
+    color: Appearance.colors.colWeatherCardSurface
     border.width: 0
 
     function parseValueText(text) {

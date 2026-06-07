@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Shapes
+import qs.Common
 
 Item {
     id: root
@@ -9,9 +10,9 @@ Item {
     property color accent: "#00e59b"
 
     readonly property real cardSize: Math.min(width, height)
-    readonly property color ink: Qt.rgba(0.96, 0.95, 0.97, 0.96)
-    readonly property color mutedInk: Qt.rgba(0.90, 0.88, 0.92, 0.92)
-    readonly property color cardFill: Qt.rgba(0.10, 0.12, 0.13, 0.985)
+    readonly property color ink: Appearance.colors.colOnWeatherCardSurface
+    readonly property color mutedInk: Appearance.colors.colOnWeatherCardSurfaceVariant
+    readonly property color cardFill: Appearance.colors.colWeatherCardSurface
     readonly property color trackTint: Qt.rgba(Qt.darker(accent, 2.9).r, Qt.darker(accent, 2.9).g, Qt.darker(accent, 2.9).b, 0.58)
 
     Rectangle {

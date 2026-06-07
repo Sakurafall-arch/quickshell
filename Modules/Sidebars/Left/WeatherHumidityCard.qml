@@ -13,7 +13,7 @@ WeatherInsightCard {
 
     icon: ""
     title: ""
-    color: "#171b20"
+    color: Appearance.colors.colWeatherCardSurface
     border.width: 0
 
     function humidityIconPath() {
@@ -61,7 +61,7 @@ WeatherInsightCard {
 
                 ShapePath {
                     strokeWidth: 0
-                    fillColor: "#ede9f7"
+                    fillColor: Appearance.colors.colOnWeatherCardSurfaceVariant
 
                     PathSvg {
                         path: root.humidityIconPath()
@@ -72,7 +72,7 @@ WeatherInsightCard {
 
         Text {
             text: "相对湿度"
-            color: "#f2edf7"
+            color: Appearance.colors.colOnWeatherCardSurfaceVariant
             font.family: "LXGW WenKai GB Screen"
             font.pixelSize: 18
             font.bold: true
@@ -109,7 +109,7 @@ WeatherInsightCard {
         anchors.leftMargin: 18
         anchors.topMargin: 72
         text: root.humidityText
-        color: "#f5f2f7"
+        color: Appearance.colors.colOnWeatherCardSurface
         font.family: "JetBrainsMono Nerd Font"
         font.pixelSize: 58
         font.bold: true
@@ -127,12 +127,12 @@ WeatherInsightCard {
             width: 52
             height: 52
             radius: 26
-            color: "#cfc2f6"
+            color: Appearance.colors.colPrimaryContainer
 
             Text {
                 anchors.centerIn: parent
                 text: root.dewPointText
-                color: "#302742"
+                color: Appearance.colors.colOnPrimaryContainer
                 font.family: "JetBrainsMono Nerd Font"
                 font.pixelSize: 17
                 font.bold: true
@@ -141,7 +141,7 @@ WeatherInsightCard {
 
         Text {
             text: "露点"
-            color: "#f5f2f7"
+            color: Appearance.colors.colOnWeatherCardSurface
             font.family: "LXGW WenKai GB Screen"
             font.pixelSize: 18
             font.bold: true

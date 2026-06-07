@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Shapes
+import qs.Common
 
 WeatherInsightCard {
     id: root
@@ -14,16 +15,16 @@ WeatherInsightCard {
     readonly property string displayUnit: parsedSpeed.unit
     readonly property string displayDetail: normalizedDetail(detailText)
     readonly property bool hasDirection: directionDegrees >= 0 && directionDegrees <= 360
-    readonly property color ink: Qt.rgba(0.96, 0.95, 0.97, 0.96)
-    readonly property color mutedInk: Qt.rgba(0.88, 0.86, 0.92, 0.92)
-    readonly property color arrowTint: Qt.rgba(0.31, 0.33, 0.45, 0.94)
+    readonly property color ink: Appearance.colors.colOnWeatherCardSurface
+    readonly property color mutedInk: Appearance.colors.colOnWeatherCardSurfaceVariant
+    readonly property color arrowTint: Appearance.applyAlpha(Appearance.colors.colOnWeatherCardSurfaceVariant, 0.18)
     readonly property real speedNumberSize: Math.round(width * 0.27)
     readonly property real speedUnitSize: Math.round(width * 0.115)
 
     icon: ""
     title: ""
     radius: Math.round(Math.min(width, height) / 2)
-    color: Qt.rgba(0.10, 0.12, 0.13, 0.985)
+    color: Appearance.colors.colWeatherCardSurface
     border.width: 0
 
     function compactNumber(value) {

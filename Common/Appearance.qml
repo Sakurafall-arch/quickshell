@@ -229,6 +229,11 @@ Singleton {
         property color colOnSurface: root.m3colors.m3onSurface
         property color colOnSurfaceVariant: root.m3colors.m3onSurfaceVariant
         property color colInversePrimary: root.m3colors.m3inversePrimary
+        property color colOnImage: Qt.rgba(1.0, 1.0, 1.0, 0.96)
+        property color colOnImageMuted: root.applyAlpha(colOnImage, 0.82)
+        property color colWeatherCardSurface: root.m3colors.m3surfaceContainerLowest
+        property color colOnWeatherCardSurface: root.m3colors.m3onSurface
+        property color colOnWeatherCardSurfaceVariant: root.m3colors.m3onSurfaceVariant
 
         property color colTooltip: root.m3colors.m3inverseSurface
         property color colOnTooltip: root.m3colors.m3inverseOnSurface

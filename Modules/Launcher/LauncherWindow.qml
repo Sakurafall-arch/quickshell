@@ -245,7 +245,7 @@ PanelWindow {
             }
         }
 
-        color: Appearance.colors.colOnPrimaryFixed
+        color: Appearance.colors.colLayer0
         radius: rofiStyle.windowRadius
         focus: true
 
@@ -325,7 +325,7 @@ PanelWindow {
                             Layout.fillWidth: true
                             Layout.preferredHeight: rofiStyle.controlHeight
                             radius: rofiStyle.controlRadius
-                            color: Appearance.colors.colOnPrimary
+                            color: Appearance.colors.colLayer2
                             clip: true
 
                             RowLayout {
@@ -335,7 +335,7 @@ PanelWindow {
 
                                 Text {
                                     text: "  "
-                                    color: Appearance.colors.colOnSurface
+                                    color: Appearance.colors.colOnLayer2
                                     font.family: Sizes.fontFamilyMono
                                     font.pixelSize: rofiStyle.fontPixelSize
                                     verticalAlignment: Text.AlignVCenter
@@ -348,7 +348,7 @@ PanelWindow {
                                     Text {
                                         anchors.fill: parent
                                         text: "Search"
-                                        color: Appearance.applyAlpha(Appearance.colors.colOnSurface, 0.65)
+                                        color: Appearance.applyAlpha(Appearance.colors.colOnLayer2, 0.65)
                                         font.family: Sizes.fontFamilyMono
                                         font.pixelSize: rofiStyle.fontPixelSize
                                         verticalAlignment: Text.AlignVCenter
@@ -358,9 +358,9 @@ PanelWindow {
                                     TextInput {
                                         id: searchInput
                                         anchors.fill: parent
-                                        color: Appearance.colors.colOnSurface
+                                        color: Appearance.colors.colOnLayer2
                                         selectionColor: Appearance.colors.colPrimary
-                                        selectedTextColor: Appearance.colors.colOnSecondary
+                                        selectedTextColor: Appearance.colors.colOnPrimary
                                         font.family: Sizes.fontFamilyMono
                                         font.pixelSize: rofiStyle.fontPixelSize
                                         verticalAlignment: TextInput.AlignVCenter
@@ -422,13 +422,13 @@ PanelWindow {
                                     Layout.preferredWidth: rofiStyle.modeButtonWidth
                                     Layout.preferredHeight: rofiStyle.controlHeight
                                     radius: rofiStyle.controlRadius
-                                    color: selected ? Appearance.colors.colPrimary : Appearance.colors.colOnPrimary
+                                    color: selected ? Appearance.colors.colPrimary : Appearance.colors.colLayer2
 
                                     Text {
                                         id: modeLabel
                                         anchors.centerIn: parent
                                         text: modelData
-                                        color: modeButton.selected ? Appearance.colors.colOnSecondary : Appearance.colors.colPrimaryFixed
+                                        color: modeButton.selected ? Appearance.colors.colOnPrimary : Appearance.colors.colOnLayer2
                                         font.family: Sizes.fontFamilyMono
                                         font.pixelSize: rofiStyle.fontPixelSize
                                     }
@@ -478,7 +478,7 @@ PanelWindow {
         Rectangle {
             anchors.fill: parent
             color: "transparent"
-            border.color: Appearance.colors.colSecondaryContainer
+            border.color: Appearance.colors.colLayer0Border
             border.width: rofiStyle.borderWidth
             radius: rofiStyle.windowRadius
         }

@@ -64,7 +64,9 @@ Item {
                     text: parent.parent.icon
                     font.family: "Font Awesome 6 Free Solid"
                     font.pixelSize: 20
-                    color: parent.parent.active ? "white" : "#888888"
+                    color: parent.parent.active
+                           ? Appearance.colors.colOnLayer0
+                           : Appearance.applyAlpha(Appearance.colors.colOnLayer0, 0.50)
                     anchors.horizontalCenter: parent.horizontalCenter
                     Behavior on color { ColorAnimation { duration: 200 } }
                 }
@@ -72,7 +74,9 @@ Item {
                     text: parent.parent.title
                     font.pixelSize: 13
                     font.bold: parent.parent.active
-                    color: parent.parent.active ? "white" : "#888888"
+                    color: parent.parent.active
+                           ? Appearance.colors.colOnLayer0
+                           : Appearance.applyAlpha(Appearance.colors.colOnLayer0, 0.50)
                     anchors.horizontalCenter: parent.horizontalCenter
                     Behavior on color { ColorAnimation { duration: 200 } }
                 }
@@ -84,7 +88,7 @@ Item {
                 width: parent.active ? 40 : 0
                 height: 3
                 radius: 1.5
-                color: "white" 
+                color: Appearance.colors.colPrimary
                 opacity: parent.active ? 1.0 : 0.0
                 Behavior on width { NumberAnimation { duration: 300; easing.type: Easing.OutBack } }
                 Behavior on opacity { NumberAnimation { duration: 200 } }

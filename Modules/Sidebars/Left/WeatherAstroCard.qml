@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Shapes
+import qs.Common
 
 Rectangle {
     id: root
@@ -12,8 +13,8 @@ Rectangle {
     property real currentEpoch: Math.floor(Date.now() / 1000)
     property real phaseAngle: 0
 
-    readonly property color cardInk: Qt.rgba(0.96, 0.95, 0.97, 0.96)
-    readonly property color titleInk: Qt.rgba(0.93, 0.91, 0.96, 0.95)
+    readonly property color cardInk: Appearance.colors.colOnWeatherCardSurface
+    readonly property color titleInk: Appearance.colors.colOnWeatherCardSurfaceVariant
     readonly property color sunTrack: Qt.rgba(0.77, 0.60, 0.25, 0.55)
     readonly property color sunTrackMuted: Qt.rgba(0.77, 0.60, 0.25, 0.35)
     readonly property color sunGlowTop: Qt.rgba(0.82, 0.65, 0.31, 0.34)
@@ -33,7 +34,7 @@ Rectangle {
     readonly property point markerPoint: cubicPoint(displayProgress)
 
     radius: 30
-    color: "#171b20"
+    color: Appearance.colors.colWeatherCardSurface
     clip: true
 
     function titleIconPath() {
@@ -368,7 +369,7 @@ Rectangle {
         Text {
             anchors.verticalCenter: parent.verticalCenter
             text: root.phaseText(root.phaseAngle)
-            color: Qt.rgba(0.82, 0.80, 0.87, 0.88)
+            color: Appearance.colors.colOnWeatherCardSurfaceVariant
             font.family: "LXGW WenKai GB Screen"
             font.pixelSize: 11
         }

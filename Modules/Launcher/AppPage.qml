@@ -176,7 +176,7 @@ Item {
                 Text {
                     text: root.highlightText(modelData.name, root.query)
                     textFormat: Text.StyledText
-                    color: delegateItem.ListView.isCurrentItem ? Appearance.colors.colOnSecondary : Appearance.colors.colOnSurface
+                    color: delegateItem.ListView.isCurrentItem ? Appearance.colors.colOnPrimary : Appearance.colors.colOnLayer0
                     font.family: Sizes.fontFamilyMono
                     font.pixelSize: rofiStyle.fontPixelSize
                     font.bold: false

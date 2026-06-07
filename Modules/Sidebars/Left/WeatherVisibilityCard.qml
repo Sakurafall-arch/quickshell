@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Shapes
+import Qt5Compat.GraphicalEffects
 import qs.Common
 
 Item {
@@ -39,7 +40,7 @@ Item {
     Rectangle {
         anchors.fill: parent
         radius: width / 2
-        color: "#171b20"
+        color: Appearance.colors.colWeatherCardSurface
     }
 
     Image {
@@ -54,6 +55,13 @@ Item {
         mipmap: true
         sourceSize.width: Math.round(width * 2)
         sourceSize.height: Math.round(height * 2)
+        visible: false
+    }
+
+    ColorOverlay {
+        anchors.fill: shapeLayer
+        source: shapeLayer
+        color: Appearance.colors.colWeatherCardSurface
     }
 
     Row {
@@ -76,7 +84,7 @@ Item {
 
                 ShapePath {
                     strokeWidth: 0
-                    fillColor: "#f2edf7"
+                    fillColor: Appearance.colors.colOnWeatherCardSurfaceVariant
 
                     PathSvg {
                         path: root.eyeIconPath()
@@ -87,7 +95,7 @@ Item {
 
         Text {
             text: "能见度"
-            color: "#f2edf7"
+            color: Appearance.colors.colOnWeatherCardSurfaceVariant
             font.family: "LXGW WenKai GB Screen"
             font.pixelSize: 19
             font.bold: true
@@ -103,7 +111,7 @@ Item {
 
         Text {
             text: root.valueNumberText()
-            color: "#f6f2f7"
+            color: Appearance.colors.colOnWeatherCardSurface
             font.family: "JetBrainsMono Nerd Font"
             font.pixelSize: Math.round(root.width * 0.24)
             font.bold: true
@@ -112,7 +120,7 @@ Item {
 
         Text {
             text: root.valueUnitText()
-            color: "#f2edf7"
+            color: Appearance.colors.colOnWeatherCardSurface
             font.family: "LXGW WenKai GB Screen"
             font.pixelSize: Math.round(root.width * 0.12)
             font.bold: true
@@ -127,7 +135,7 @@ Item {
         anchors.topMargin: root.height * 0.12
         width: parent.width * 0.36
         text: root.descriptionText()
-        color: "#f2edf7"
+        color: Appearance.colors.colOnWeatherCardSurface
         font.family: "LXGW WenKai GB Screen"
         font.pixelSize: 22
         font.bold: true

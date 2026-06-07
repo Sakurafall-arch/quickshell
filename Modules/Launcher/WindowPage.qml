@@ -92,7 +92,7 @@ Item {
     Text {
         anchors.centerIn: parent
         text: "No windows opened."
-        color: Appearance.colors.colOnSurfaceVariant
+        color: Appearance.applyAlpha(Appearance.colors.colOnLayer0, 0.68)
         font.family: Sizes.fontFamilyMono
         font.pixelSize: rofiStyle.fontPixelSize
         visible: root.filteredWindows.length === 0
@@ -164,7 +164,7 @@ Item {
                 Text {
                     text: root.highlightText(root.cleanAppName(modelData.title, false), root.query)
                     textFormat: Text.StyledText
-                    color: delegateItem.ListView.isCurrentItem ? Appearance.colors.colOnSecondary : Appearance.colors.colOnSurface
+                    color: delegateItem.ListView.isCurrentItem ? Appearance.colors.colOnPrimary : Appearance.colors.colOnLayer0
                     font.family: Sizes.fontFamilyMono
                     font.pixelSize: rofiStyle.fontPixelSize
                     font.bold: false
@@ -177,7 +177,9 @@ Item {
                 Text {
                     text: root.highlightText(root.cleanAppName(modelData.appName || modelData.appId, true), root.query)
                     textFormat: Text.StyledText
-                    color: delegateItem.ListView.isCurrentItem ? Appearance.applyAlpha(Appearance.colors.colOnSecondary, 0.7) : Appearance.colors.colOnSurfaceVariant
+                    color: delegateItem.ListView.isCurrentItem
+                           ? Appearance.applyAlpha(Appearance.colors.colOnPrimary, 0.72)
+                           : Appearance.applyAlpha(Appearance.colors.colOnLayer0, 0.68)
                     font.family: Sizes.fontFamilyMono
                     font.pixelSize: rofiStyle.secondaryFontPixelSize
                     verticalAlignment: Text.AlignVCenter

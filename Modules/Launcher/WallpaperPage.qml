@@ -142,7 +142,7 @@ Item {
     Text {
         anchors.centerIn: parent
         text: "Scanning wallpapers..."
-        color: Appearance.colors.colOnSurfaceVariant
+        color: Appearance.applyAlpha(Appearance.colors.colOnLayer0, 0.68)
         font.family: Sizes.fontFamilyMono
         font.pixelSize: rofiStyle.fontPixelSize
         visible: root.isLoading
@@ -151,7 +151,7 @@ Item {
     Text {
         anchors.centerIn: parent
         text: "No wallpapers found."
-        color: Appearance.colors.colOnSurfaceVariant
+        color: Appearance.applyAlpha(Appearance.colors.colOnLayer0, 0.68)
         font.family: Sizes.fontFamilyMono
         font.pixelSize: rofiStyle.fontPixelSize
         visible: !root.isLoading && filteredWallpaperModel.count === 0
@@ -221,7 +221,7 @@ Item {
 
                 Text {
                     text: model.fileName
-                    color: delegateItem.ListView.isCurrentItem ? Appearance.colors.colOnSecondary : Appearance.colors.colOnSurface
+                    color: delegateItem.ListView.isCurrentItem ? Appearance.colors.colOnPrimary : Appearance.colors.colOnLayer0
                     font.family: Sizes.fontFamilyMono
                     font.pixelSize: rofiStyle.fontPixelSize
                     font.bold: false
