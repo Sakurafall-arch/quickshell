@@ -27,9 +27,23 @@ ApplicationWindow {
     property int currentPage: 0
     property bool navExpanded: width > 900
     readonly property var pages: [
+        ({ "title": "通用", "icon": "settings" }),
         ({ "title": "壁纸", "icon": "wallpaper" }),
         ({ "title": "主题", "icon": "palette" })
     ]
+
+    function pageComponent(index) {
+        switch (index) {
+        case 0:
+            return generalPage;
+        case 1:
+            return wallpaperPage;
+        case 2:
+            return themePage;
+        default:
+            return generalPage;
+        }
+    }
 
     function openConfig() {
         Qt.openUrlExternally(Paths.fileUrl(PersonalizationConfig.filePath));
@@ -190,67 +204,15 @@ ApplicationWindow {
                     Loader {
                         id: pageLoader
                         anchors.fill: parent
-                        opacity: 1
-                        sourceComponent: wallpaperPage
-
-                        Connections {
-                            target: root
-                            function onCurrentPageChanged() {
-                                if (switchAnim.running)
-                                    switchAnim.complete();
-                                switchAnim.start();
-                            }
-                        }
-
-                        SequentialAnimation {
-                            id: switchAnim
-
-                            NumberAnimation {
-                                target: pageLoader
-                                property: "opacity"
-                                from: 1
-                                to: 0
-                                duration: 100
-                                easing.type: Appearance.animation.emphasizedAccel.type
-                                easing.bezierCurve: Appearance.animation.emphasizedAccel.bezierCurve
-                            }
-
-                            ParallelAnimation {
-                                PropertyAction {
-                                    target: pageLoader
-                                    property: "sourceComponent"
-                                    value: root.currentPage === 0 ? wallpaperPage : themePage
-                                }
-                                PropertyAction {
-                                    target: pageLoader
-                                    property: "anchors.topMargin"
-                                    value: 20
-                                }
-                            }
-
-                            ParallelAnimation {
-                                NumberAnimation {
-                                    target: pageLoader
-                                    property: "opacity"
-                                    from: 0
-                                    to: 1
-                                    duration: 200
-                                    easing.type: Appearance.animation.standardDecel.type
-                                    easing.bezierCurve: Appearance.animation.standardDecel.bezierCurve
-                                }
-                                NumberAnimation {
-                                    target: pageLoader
-                                    property: "anchors.topMargin"
-                                    to: 0
-                                    duration: 200
-                                    easing.type: Appearance.animation.standardDecel.type
-                                    easing.bezierCurve: Appearance.animation.standardDecel.bezierCurve
-                                }
-                            }
-                        }
+                        sourceComponent: root.pageComponent(root.currentPage)
                     }
             }
         }
+    }
+
+    Component {
+        id: generalPage
+        GeneralPage {}
     }
 
     Component {
