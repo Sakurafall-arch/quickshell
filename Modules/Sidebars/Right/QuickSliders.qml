@@ -1,7 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
 import qs.Common
-import qs.Components
 import qs.Services
 import qs.Widgets.common
 
@@ -33,9 +32,10 @@ Rectangle {
         }
         spacing: 0
 
-        QuickSlider {
+        QuickMaterialSlider {
             materialSymbol: "light_mode"
             secondaryMaterialSymbol: "wb_twilight"
+            secondaryIconLocation: root.gammaCutoff
             stopIndicatorValues: Wlsunset.gamma !== 100 && root.brightnessValue > 0 ? [root.gammaCutoff + root.brightnessValue * (1 - root.gammaCutoff)] : []
             value: Wlsunset.gamma === 100 ? root.gammaCutoff + root.brightnessValue * (1 - root.gammaCutoff) : (Wlsunset.gamma - Wlsunset.gammaLowerLimit) / (100 - Wlsunset.gammaLowerLimit) * root.gammaCutoff
             percentText: Wlsunset.gamma === 100 ? `${Math.round(root.brightnessValue * 100)}%` : `${Wlsunset.gamma}%`
@@ -53,133 +53,16 @@ Rectangle {
             }
         }
 
-        QuickSlider {
+        QuickMaterialSlider {
             materialSymbol: "volume_up"
             value: Volume.sinkVolume
             onMoved: Volume.setSinkVolume(value)
         }
 
-        QuickSlider {
+        QuickMaterialSlider {
             materialSymbol: "mic"
             value: Volume.sourceVolume
             onMoved: Volume.setSourceVolume(value)
-        }
-    }
-
-    component QuickSlider: MaterialSplitSlider {
-        id: quickSlider
-
-        required property string materialSymbol
-        property string secondaryMaterialSymbol: ""
-        property string percentText: `${Math.round(((value - from) / (to - from)) * 100)}%`
-
-        configuration: MaterialSplitSlider.Configuration.M
-        stopIndicatorValues: []
-        dividerValues: secondaryMaterialSymbol.length > 0 ? [secondaryIcon.iconLocation] : []
-        Layout.fillWidth: true
-
-        Text {
-            id: percentLabel
-
-            readonly property bool nearEmpty: quickSlider.visualPosition * quickSlider.effectiveDraggingWidth <= implicitWidth + 20
-
-            anchors {
-                verticalCenter: quickSlider.verticalCenter
-                left: nearEmpty ? quickSlider.handle.left : quickSlider.left
-                leftMargin: nearEmpty ? 14 : 8
-            }
-            text: quickSlider.percentText
-            color: nearEmpty ? Appearance.colors.colOnSecondaryContainer : Appearance.colors.colOnPrimary
-            font.family: Sizes.fontFamilyMono
-            font.pixelSize: 12
-            font.weight: Font.Medium
-            renderType: Text.NativeRendering
-            z: 1
-
-            Behavior on color {
-                ColorAnimation {
-                    duration: quickSlider.fastAnimation.duration
-                    easing.type: quickSlider.fastAnimation.type
-                    easing.bezierCurve: quickSlider.fastAnimation.bezierCurve
-                }
-            }
-
-            Behavior on anchors.leftMargin {
-                NumberAnimation {
-                    alwaysRunToEnd: true
-                    duration: quickSlider.fastAnimation.duration
-                    easing.type: quickSlider.fastAnimation.type
-                    easing.bezierCurve: quickSlider.fastAnimation.bezierCurve
-                }
-            }
-        }
-
-        MaterialSymbol {
-            id: icon
-
-            property bool nearFull: quickSlider.value >= 0.9
-
-            anchors {
-                verticalCenter: quickSlider.verticalCenter
-                right: nearFull ? quickSlider.handle.right : quickSlider.right
-                rightMargin: nearFull ? 14 : 8
-            }
-            text: quickSlider.materialSymbol
-            iconSize: 20
-            fill: 0
-            color: nearFull ? Appearance.colors.colOnPrimary : Appearance.colors.colOnSecondaryContainer
-
-            Behavior on color {
-                ColorAnimation {
-                    duration: quickSlider.fastAnimation.duration
-                    easing.type: quickSlider.fastAnimation.type
-                    easing.bezierCurve: quickSlider.fastAnimation.bezierCurve
-                }
-            }
-
-            Behavior on anchors.rightMargin {
-                NumberAnimation {
-                    alwaysRunToEnd: true
-                    duration: quickSlider.fastAnimation.duration
-                    easing.type: quickSlider.fastAnimation.type
-                    easing.bezierCurve: quickSlider.fastAnimation.bezierCurve
-                }
-            }
-        }
-
-        MaterialSymbol {
-            id: secondaryIcon
-
-            visible: quickSlider.secondaryMaterialSymbol.length > 0
-            property real iconLocation: root.gammaCutoff
-            property bool nearIcon: iconLocation - quickSlider.value <= 0.1 && iconLocation - quickSlider.value > (quickSlider.handleWidth + 8 - 14) / quickSlider.effectiveDraggingWidth
-
-            anchors {
-                verticalCenter: quickSlider.verticalCenter
-                right: nearIcon ? quickSlider.handle.right : quickSlider.right
-                rightMargin: nearIcon ? 14 : (1 - iconLocation) * quickSlider.effectiveDraggingWidth + quickSlider.rightPadding + 8
-            }
-            text: quickSlider.secondaryMaterialSymbol
-            iconSize: 20
-            fill: 0
-            color: quickSlider.value >= iconLocation - 0.1 ? Appearance.colors.colOnPrimary : Appearance.colors.colOnSecondaryContainer
-
-            Behavior on color {
-                ColorAnimation {
-                    duration: quickSlider.fastAnimation.duration
-                    easing.type: quickSlider.fastAnimation.type
-                    easing.bezierCurve: quickSlider.fastAnimation.bezierCurve
-                }
-            }
-
-            Behavior on anchors.rightMargin {
-                NumberAnimation {
-                    alwaysRunToEnd: true
-                    duration: quickSlider.fastAnimation.duration
-                    easing.type: quickSlider.fastAnimation.type
-                    easing.bezierCurve: quickSlider.fastAnimation.bezierCurve
-                }
-            }
         }
     }
 }

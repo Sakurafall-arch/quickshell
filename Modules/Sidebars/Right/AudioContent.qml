@@ -4,9 +4,7 @@ import Quickshell
 import Quickshell.Services.Pipewire
 import qs.Widgets.common
 import qs.Common
-import qs.Widgets.audio
 import qs.Services
-import QtQuick.Controls
 
 WidgetPanel {
     id: root
@@ -57,7 +55,14 @@ WidgetPanel {
                 }
             }
 
-            VolumeSlider { node: root.defaultSink; isHeadphone: root.isHeadphone(root.defaultSink) }
+            QuickMaterialSlider {
+                enabled: root.defaultSink !== null
+                materialSymbol: root.isHeadphone(root.defaultSink) ? "headphones" : "volume_up"
+                value: root.defaultSink ? (root.defaultSink.audio.muted ? 0 : root.defaultSink.audio.volume) : 0
+                percentText: root.defaultSink ? `${Math.round(value * 100)}%` : "0%"
+                tooltipContent: percentText
+                onMoved: Volume.setSinkVolume(value)
+            }
         }
     }
 
@@ -139,7 +144,7 @@ WidgetPanel {
                                     anchors.fill: parent; radius: 16; color: Appearance.colors.colPrimary; rotation: 45 
                                     Rectangle { width: 16; height: 16; x: 16; y: 16; color: parent.color }
                                 }
-                                Text { anchors.centerIn: parent; text: Math.round(appNode.audio.volume * 100); color: Appearance.colors.colLayer1; font.pixelSize: 11; font.bold: true }
+                                Text { anchors.centerIn: parent; text: Math.round(appNode.audio.volume * 100); color: Appearance.colors.colOnPrimary; font.pixelSize: 11; font.bold: true }
                             }
                         }
 
