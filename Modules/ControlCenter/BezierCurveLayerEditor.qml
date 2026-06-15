@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Controls.Material
 import QtQuick.Layouts
+import Qt5Compat.GraphicalEffects
 import Quickshell
 import Quickshell.Wayland
 import qs.Common
@@ -846,53 +847,77 @@ Item {
             Item {
                 id: fabMenu
 
+                readonly property real mainSize: 56
+                readonly property real miniSize: 44
+                readonly property real buttonGap: 10
+
                 anchors.right: parent.right
                 anchors.bottom: parent.bottom
                 anchors.rightMargin: 18
                 anchors.bottomMargin: 18
-                width: 56
-                height: menuColumn.implicitHeight
+                width: Math.max(mainSize, playMiniFab.implicitWidth, reverseMiniFab.implicitWidth, flipMiniFab.implicitWidth, manualMiniFab.implicitWidth)
+                height: mainSize + 4 * (miniSize + buttonGap)
 
-                Column {
+                Item {
                     id: menuColumn
 
-                    anchors.right: parent.right
-                    anchors.bottom: parent.bottom
-                    spacing: 10
+                    anchors.fill: parent
 
                     MiniFab {
+                        id: playMiniFab
+
                         iconName: root.playing ? "pause" : "play_arrow"
-                        tooltipText: root.playing ? "暂停" : "播放"
+                        labelText: root.playing ? "暂停" : "播放"
                         expanded: root.fabExpanded
                         order: 4
+                        expandedY: fabMenu.height - fabMenu.mainSize - order * (fabMenu.miniSize + fabMenu.buttonGap)
+                        collapsedY: fabMenu.height - fabMenu.mainSize + (fabMenu.mainSize - fabMenu.miniSize) / 2
+                        mainSize: fabMenu.mainSize
                         onClicked: root.togglePlayback()
                     }
 
                     MiniFab {
+                        id: reverseMiniFab
+
                         iconName: "keyboard_double_arrow_left"
-                        tooltipText: "倒放"
+                        labelText: "倒放"
                         expanded: root.fabExpanded
                         order: 3
+                        expandedY: fabMenu.height - fabMenu.mainSize - order * (fabMenu.miniSize + fabMenu.buttonGap)
+                        collapsedY: fabMenu.height - fabMenu.mainSize + (fabMenu.mainSize - fabMenu.miniSize) / 2
+                        mainSize: fabMenu.mainSize
                         onClicked: root.reversePlayback()
                     }
 
                     MiniFab {
+                        id: flipMiniFab
+
                         iconName: "swap_vert"
-                        tooltipText: "翻转"
+                        labelText: "翻转"
                         expanded: root.fabExpanded
                         order: 2
+                        expandedY: fabMenu.height - fabMenu.mainSize - order * (fabMenu.miniSize + fabMenu.buttonGap)
+                        collapsedY: fabMenu.height - fabMenu.mainSize + (fabMenu.mainSize - fabMenu.miniSize) / 2
+                        mainSize: fabMenu.mainSize
                         onClicked: root.flipCurve()
                     }
 
                     MiniFab {
+                        id: manualMiniFab
+
                         iconName: "edit_note"
-                        tooltipText: "手动输入"
+                        labelText: "手动输入"
                         expanded: root.fabExpanded
                         order: 1
+                        expandedY: fabMenu.height - fabMenu.mainSize - order * (fabMenu.miniSize + fabMenu.buttonGap)
+                        collapsedY: fabMenu.height - fabMenu.mainSize + (fabMenu.mainSize - fabMenu.miniSize) / 2
+                        mainSize: fabMenu.mainSize
                         onClicked: root.toggleManualInput()
                     }
 
                     MainFab {
+                        anchors.right: parent.right
+                        anchors.bottom: parent.bottom
                         expanded: root.fabExpanded
                         onClicked: root.fabExpanded = !root.fabExpanded
                     }
@@ -957,20 +982,47 @@ Item {
         id: fab
 
         property bool expanded: false
+        property int rippleDuration: 900
 
         signal clicked
 
         implicitWidth: 56
         implicitHeight: 56
+        width: implicitWidth
+        height: implicitHeight
 
         Rectangle {
+            id: mainFabBackground
+
             anchors.fill: parent
-            radius: 16
+            radius: fab.expanded ? width / 2 : 16
             color: fabMouse.pressed
                    ? Appearance.colors.colPrimaryActive
                    : fabMouse.containsMouse
                      ? Appearance.colors.colPrimaryHover
                      : Appearance.colors.colPrimary
+
+            function startRipple(x, y) {
+                const dist = (ox, oy) => ox * ox + oy * oy;
+                mainFabRippleAnimation.x = x;
+                mainFabRippleAnimation.y = y;
+                mainFabRippleAnimation.radius = Math.sqrt(Math.max(
+                    dist(0, 0),
+                    dist(width, 0),
+                    dist(0, height),
+                    dist(width, height)
+                ));
+                mainFabRippleFade.complete();
+                mainFabRippleAnimation.restart();
+            }
+
+            Behavior on radius {
+                NumberAnimation {
+                    duration: Appearance.animation.elementMoveFast.duration
+                    easing.type: Appearance.animation.elementMoveFast.type
+                    easing.bezierCurve: Appearance.animation.elementMoveFast.bezierCurve
+                }
+            }
 
             Behavior on color {
                 ColorAnimation {
@@ -979,14 +1031,101 @@ Item {
                     easing.bezierCurve: Appearance.animation.expressiveEffects.bezierCurve
                 }
             }
+
+            layer.enabled: true
+            layer.effect: OpacityMask {
+                maskSource: Rectangle {
+                    width: mainFabBackground.width
+                    height: mainFabBackground.height
+                    radius: mainFabBackground.radius
+                }
+            }
+
+            Item {
+                id: mainFabRipple
+
+                property real rippleSize: 0
+
+                width: rippleSize
+                height: rippleSize
+                opacity: 0
+                visible: width > 0 && height > 0
+
+                RadialGradient {
+                    anchors.fill: parent
+                    gradient: Gradient {
+                        GradientStop {
+                            position: 0.0
+                            color: Appearance.colors.colPrimaryActive
+                        }
+                        GradientStop {
+                            position: 0.32
+                            color: Appearance.colors.colPrimaryActive
+                        }
+                        GradientStop {
+                            position: 0.58
+                            color: Appearance.applyAlpha(Appearance.colors.colPrimaryActive, 0)
+                        }
+                    }
+                }
+
+                transform: Translate {
+                    x: -mainFabRipple.width / 2
+                    y: -mainFabRipple.height / 2
+                }
+            }
+
+            NumberAnimation {
+                id: mainFabRippleFade
+
+                target: mainFabRipple
+                property: "opacity"
+                to: 0
+                duration: fab.rippleDuration * 2
+                easing.type: Appearance.animation.standardDecel.type
+                easing.bezierCurve: Appearance.animation.standardDecel.bezierCurve
+            }
+
+            SequentialAnimation {
+                id: mainFabRippleAnimation
+
+                property real x: 0
+                property real y: 0
+                property real radius: 0
+
+                PropertyAction {
+                    target: mainFabRipple
+                    property: "x"
+                    value: mainFabRippleAnimation.x
+                }
+                PropertyAction {
+                    target: mainFabRipple
+                    property: "y"
+                    value: mainFabRippleAnimation.y
+                }
+                PropertyAction {
+                    target: mainFabRipple
+                    property: "opacity"
+                    value: 1
+                }
+                NumberAnimation {
+                    target: mainFabRipple
+                    property: "rippleSize"
+                    from: 0
+                    to: mainFabRippleAnimation.radius * 2
+                    duration: fab.rippleDuration
+                    easing.type: Appearance.animation.standardDecel.type
+                    easing.bezierCurve: Appearance.animation.standardDecel.bezierCurve
+                }
+            }
         }
 
         MaterialSymbol {
             anchors.centerIn: parent
-            text: "add"
-            iconSize: 26
+            text: fab.expanded ? "menu_open" : "menu"
+            iconSize: 24
             color: Appearance.colors.colOnPrimary
-            rotation: fab.expanded ? 45 : 0
+            rotation: fab.expanded ? 0 : -180
 
             Behavior on rotation {
                 NumberAnimation {
@@ -1003,6 +1142,12 @@ Item {
             anchors.fill: parent
             hoverEnabled: true
             cursorShape: Qt.PointingHandCursor
+            onPressed: mouse => {
+                if (mouse.button === Qt.LeftButton)
+                    mainFabBackground.startRipple(mouse.x, mouse.y);
+            }
+            onReleased: mainFabRippleFade.restart()
+            onCanceled: mainFabRippleFade.restart()
             onClicked: fab.clicked()
         }
     }
@@ -1011,19 +1156,27 @@ Item {
         id: miniFab
 
         property string iconName: ""
-        property string tooltipText: ""
+        property string labelText: ""
         property bool expanded: false
         property int order: 0
+        property real expandedY: 0
+        property real collapsedY: 0
+        property real collapsedWidth: 44
+        property real mainSize: 56
+        property int rippleDuration: 900
+        readonly property real horizontalPadding: 14
 
         signal clicked
 
-        width: 44
+        implicitWidth: Math.max(collapsedWidth, contentRow.implicitWidth + horizontalPadding * 2)
+        width: expanded ? implicitWidth : collapsedWidth
         height: 44
         opacity: expanded ? 1 : 0
         scale: expanded ? 1 : 0.72
+        transformOrigin: Item.Right
         enabled: expanded
-        x: expanded ? 6 : 6
-        y: expanded ? 0 : 18 * order
+        x: parent ? parent.width - width : 0
+        y: expanded ? expandedY : collapsedY
 
         Behavior on opacity {
             NumberAnimation {
@@ -1050,6 +1203,8 @@ Item {
         }
 
         Rectangle {
+            id: miniBackground
+
             anchors.fill: parent
             radius: 14
             color: miniMouse.pressed
@@ -1059,14 +1214,131 @@ Item {
                      : Appearance.colors.colSecondaryContainer
             border.width: 1
             border.color: Appearance.applyAlpha(Appearance.colors.colOnSurfaceVariant, 0.14)
+
+            function startRipple(x, y) {
+                const dist = (ox, oy) => ox * ox + oy * oy;
+                miniRippleAnimation.x = x;
+                miniRippleAnimation.y = y;
+                miniRippleAnimation.radius = Math.sqrt(Math.max(
+                    dist(0, 0),
+                    dist(width, 0),
+                    dist(0, height),
+                    dist(width, height)
+                ));
+                miniRippleFade.complete();
+                miniRippleAnimation.restart();
+            }
+
+            layer.enabled: true
+            layer.effect: OpacityMask {
+                maskSource: Rectangle {
+                    width: miniBackground.width
+                    height: miniBackground.height
+                    radius: miniBackground.radius
+                }
+            }
+
+            Item {
+                id: miniRipple
+
+                property real rippleSize: 0
+
+                width: rippleSize
+                height: rippleSize
+                opacity: 0
+                visible: width > 0 && height > 0
+
+                RadialGradient {
+                    anchors.fill: parent
+                    gradient: Gradient {
+                        GradientStop {
+                            position: 0.0
+                            color: Appearance.colors.colSecondaryContainerActive
+                        }
+                        GradientStop {
+                            position: 0.32
+                            color: Appearance.colors.colSecondaryContainerActive
+                        }
+                        GradientStop {
+                            position: 0.58
+                            color: Appearance.applyAlpha(Appearance.colors.colSecondaryContainerActive, 0)
+                        }
+                    }
+                }
+
+                transform: Translate {
+                    x: -miniRipple.width / 2
+                    y: -miniRipple.height / 2
+                }
+            }
+
+            NumberAnimation {
+                id: miniRippleFade
+
+                target: miniRipple
+                property: "opacity"
+                to: 0
+                duration: miniFab.rippleDuration * 2
+                easing.type: Appearance.animation.standardDecel.type
+                easing.bezierCurve: Appearance.animation.standardDecel.bezierCurve
+            }
+
+            SequentialAnimation {
+                id: miniRippleAnimation
+
+                property real x: 0
+                property real y: 0
+                property real radius: 0
+
+                PropertyAction {
+                    target: miniRipple
+                    property: "x"
+                    value: miniRippleAnimation.x
+                }
+                PropertyAction {
+                    target: miniRipple
+                    property: "y"
+                    value: miniRippleAnimation.y
+                }
+                PropertyAction {
+                    target: miniRipple
+                    property: "opacity"
+                    value: 1
+                }
+                NumberAnimation {
+                    target: miniRipple
+                    property: "rippleSize"
+                    from: 0
+                    to: miniRippleAnimation.radius * 2
+                    duration: miniFab.rippleDuration
+                    easing.type: Appearance.animation.standardDecel.type
+                    easing.bezierCurve: Appearance.animation.standardDecel.bezierCurve
+                }
+            }
         }
 
-        MaterialSymbol {
+        RowLayout {
+            id: contentRow
+
             anchors.centerIn: parent
-            text: miniFab.iconName
-            iconSize: 21
-            color: Appearance.colors.colOnSecondaryContainer
-            fill: miniMouse.containsMouse ? 1 : 0
+            spacing: 8
+
+            MaterialSymbol {
+                Layout.preferredWidth: 21
+                Layout.preferredHeight: 21
+                text: miniFab.iconName
+                iconSize: 21
+                color: Appearance.colors.colOnSecondaryContainer
+                fill: miniMouse.containsMouse ? 1 : 0
+            }
+
+            Text {
+                text: miniFab.labelText
+                color: Appearance.colors.colOnSecondaryContainer
+                font.family: Sizes.fontFamily
+                font.pixelSize: 13
+                font.weight: Font.Medium
+            }
         }
 
         MouseArea {
@@ -1075,12 +1347,13 @@ Item {
             anchors.fill: parent
             hoverEnabled: true
             cursorShape: Qt.PointingHandCursor
+            onPressed: mouse => {
+                if (mouse.button === Qt.LeftButton)
+                    miniBackground.startRipple(mouse.x, mouse.y);
+            }
+            onReleased: miniRippleFade.restart()
+            onCanceled: miniRippleFade.restart()
             onClicked: miniFab.clicked()
-        }
-
-        StyledToolTip {
-            extraVisibleCondition: miniMouse.containsMouse && miniFab.tooltipText !== ""
-            text: miniFab.tooltipText
         }
     }
 
@@ -1105,14 +1378,17 @@ Item {
 
             Item {
                 Layout.fillWidth: true
-                Layout.preferredHeight: 54
-
-                readonly property bool floated: manualInput.activeFocus || manualInput.text.length > 0
+                Layout.preferredHeight: 64
 
                 Rectangle {
-                    anchors.fill: parent
+                    id: outlinedInputFrame
+
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.bottom: parent.bottom
+                    height: 56
                     radius: Appearance.rounding.small
-                    color: Appearance.colors.colLayer2
+                    color: "transparent"
                     border.width: 1
                     border.color: root.manualInputInvalid
                                   ? Appearance.colors.colError
@@ -1121,43 +1397,29 @@ Item {
                                     : Appearance.applyAlpha(Appearance.colors.colOnSurfaceVariant, 0.32)
                 }
 
-                Text {
-                    id: floatingLabel
+                Rectangle {
+                    x: outlinedInputLabel.x - 4
+                    y: outlinedInputLabel.y + outlinedInputLabel.height / 2 - 8
+                    width: outlinedInputLabel.implicitWidth + 8
+                    height: 16
+                    color: Appearance.m3colors.m3surfaceContainerHigh
+                }
 
-                    x: 12
-                    y: parent.floated ? 5 : 18
+                Text {
+                    id: outlinedInputLabel
+
+                    x: 14
+                    y: 0
                     text: "x1, y1, x2, y2"
                     color: root.manualInputInvalid ? Appearance.colors.colError : manualInput.activeFocus ? Appearance.colors.colPrimary : Appearance.colors.colSubtext
                     font.family: Sizes.fontFamily
-                    font.pixelSize: parent.floated ? 11 : 14
-
-                    Behavior on y {
-                        NumberAnimation {
-                            duration: Appearance.animation.expressiveEffects.duration
-                            easing.type: Appearance.animation.expressiveEffects.type
-                            easing.bezierCurve: Appearance.animation.expressiveEffects.bezierCurve
-                        }
-                    }
-
-                    Behavior on font.pixelSize {
-                        NumberAnimation {
-                            duration: Appearance.animation.expressiveEffects.duration
-                            easing.type: Appearance.animation.expressiveEffects.type
-                            easing.bezierCurve: Appearance.animation.expressiveEffects.bezierCurve
-                        }
-                    }
+                    font.pixelSize: 12
                 }
 
                 TextField {
                     id: manualInput
 
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    anchors.bottom: parent.bottom
-                    anchors.leftMargin: 10
-                    anchors.rightMargin: 10
-                    anchors.bottomMargin: 2
-                    height: 34
+                    anchors.fill: outlinedInputFrame
                     text: root.manualInputText
                     color: Appearance.colors.colOnSurface
                     selectedTextColor: Appearance.colors.colOnPrimary
@@ -1165,6 +1427,11 @@ Item {
                     selectByMouse: true
                     font.family: Sizes.fontFamilyMono
                     font.pixelSize: 13
+                    leftPadding: 16
+                    rightPadding: 12
+                    topPadding: 14
+                    bottomPadding: 4
+                    verticalAlignment: TextInput.AlignVCenter
                     Material.accent: Appearance.colors.colPrimary
                     background: Item {}
                     onTextChanged: {

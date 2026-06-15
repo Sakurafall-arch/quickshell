@@ -162,109 +162,7 @@ StyledFlickable {
         }
     }
 
-    component EasingGroupButton: Item {
-        id: groupButton
-
-        required property string iconName
-        property string tooltipText: ""
-        property bool active: false
-        property bool first: false
-        property bool last: false
-        property int buttonHeight: 38
-        property int baseWidth: 44
-        property int innerRadius: 6
-        property int pressedExpansion: 10
-        property real edgeRadius: buttonHeight / 2
-        property real rLeft: (active || first || buttonMouse.pressed) ? edgeRadius : innerRadius
-        property real rRight: (active || last || buttonMouse.pressed) ? edgeRadius : innerRadius
-        property color bgColor: active
-                                ? (buttonMouse.pressed ? Appearance.colors.colPrimaryActive : buttonMouse.containsMouse ? Appearance.colors.colPrimaryHover : Appearance.colors.colPrimary)
-                                : (buttonMouse.pressed ? Appearance.colors.colSecondaryContainerActive : buttonMouse.containsMouse ? Appearance.colors.colSecondaryContainerHover : Appearance.colors.colSecondaryContainer)
-
-        signal clicked
-
-        Layout.preferredWidth: baseWidth + (buttonMouse.pressed ? pressedExpansion : 0)
-        Layout.preferredHeight: buttonHeight
-        opacity: enabled ? 1 : 0.45
-        scale: buttonMouse.pressed ? 0.97 : 1
-
-        Behavior on Layout.preferredWidth {
-            NumberAnimation {
-                duration: 250
-                easing.type: Easing.OutBack
-                easing.overshoot: 1.2
-            }
-        }
-
-        Behavior on bgColor {
-            ColorAnimation {
-                duration: 150
-            }
-        }
-
-        Behavior on scale {
-            NumberAnimation {
-                duration: 130
-                easing.type: Easing.OutSine
-            }
-        }
-
-        Rectangle {
-            anchors.fill: parent
-            radius: groupButton.rLeft > groupButton.rRight ? groupButton.rLeft : groupButton.rRight
-            color: groupButton.bgColor
-
-            Behavior on radius {
-                NumberAnimation {
-                    duration: 200
-                    easing.type: Easing.OutSine
-                }
-            }
-        }
-
-        Rectangle {
-            anchors.left: groupButton.rLeft < groupButton.rRight ? parent.left : undefined
-            anchors.right: groupButton.rRight < groupButton.rLeft ? parent.right : undefined
-            anchors.top: parent.top
-            anchors.bottom: parent.bottom
-            width: parent.width / 2 + 5
-            visible: groupButton.rLeft !== groupButton.rRight
-            radius: groupButton.rLeft < groupButton.rRight ? groupButton.rLeft : groupButton.rRight
-            color: groupButton.bgColor
-
-            Behavior on radius {
-                NumberAnimation {
-                    duration: 200
-                    easing.type: Easing.OutSine
-                }
-            }
-        }
-
-        MaterialSymbol {
-            anchors.centerIn: parent
-            text: groupButton.iconName
-            iconSize: 21
-            fill: groupButton.active ? 1 : 0
-            color: groupButton.active ? Appearance.colors.colOnPrimary : Appearance.colors.colOnSecondaryContainer
-        }
-
-        MouseArea {
-            id: buttonMouse
-
-            anchors.fill: parent
-            enabled: groupButton.enabled
-            hoverEnabled: true
-            cursorShape: Qt.PointingHandCursor
-            onClicked: groupButton.clicked()
-        }
-
-        StyledToolTip {
-            extraVisibleCondition: buttonMouse.containsMouse && groupButton.tooltipText !== ""
-            text: groupButton.tooltipText
-        }
-    }
-
-    component EasingActionGroup: RowLayout {
+    component EasingActionGroup: StyledButtonGroup {
         id: group
 
         property bool playing: false
@@ -274,28 +172,23 @@ StyledFlickable {
         signal replayClicked
         signal flipClicked
 
-        spacing: 2
-
-        EasingGroupButton {
-            first: true
-            active: group.playing
-            iconName: group.playing ? "pause" : "play_arrow"
-            tooltipText: group.playing ? "暂停" : "播放"
-            onClicked: group.playClicked()
-        }
-
-        EasingGroupButton {
-            iconName: "keyboard_double_arrow_left"
-            tooltipText: "倒放"
-            onClicked: group.replayClicked()
-        }
-
-        EasingGroupButton {
-            last: true
-            enabled: group.flipEnabled
-            iconName: "swap_vert"
-            tooltipText: "翻转"
-            onClicked: group.flipClicked()
+        iconOnly: true
+        buttonHeight: 38
+        buttonMinWidth: 44
+        horizontalPadding: 23
+        currentValue: group.playing ? "play" : ""
+        model: [
+            ({ "value": "play", "icon": group.playing ? "pause" : "play_arrow", "tooltip": group.playing ? "暂停" : "播放" }),
+            ({ "value": "replay", "icon": "keyboard_double_arrow_left", "tooltip": "倒放" }),
+            ({ "value": "flip", "icon": "swap_vert", "tooltip": "翻转", "enabled": group.flipEnabled })
+        ]
+        onValueSelected: value => {
+            if (value === "play")
+                group.playClicked();
+            else if (value === "replay")
+                group.replayClicked();
+            else if (value === "flip")
+                group.flipClicked();
         }
     }
 
@@ -433,7 +326,7 @@ StyledFlickable {
                         visible: root.currentWallpaperPath !== ""
                     }
 
-                    SegmentedButtonGroup {
+                    StyledButtonGroup {
                         Layout.alignment: Qt.AlignLeft
                         model: [
                             ({ "value": "previous", "label": "上一张" }),
@@ -453,7 +346,7 @@ StyledFlickable {
                 }
             }
 
-            SegmentedButtonGroup {
+            StyledButtonGroup {
                 id: fillModeButtonGroup
 
                 Layout.alignment: Qt.AlignHCenter
@@ -492,7 +385,7 @@ StyledFlickable {
                         anchors.horizontalCenter: parent.horizontalCenter
                         spacing: 4
 
-                        SegmentedButtonGroup {
+                        StyledButtonGroup {
                             Layout.alignment: Qt.AlignHCenter
                             model: PersonalizationConfig.transitionTypes.slice(0, 5)
                             currentValue: PersonalizationConfig.wallpaperTransitionType
@@ -500,7 +393,7 @@ StyledFlickable {
                             onValueSelected: value => WallpaperService.setWallpaperTransitionType(value)
                         }
 
-                        SegmentedButtonGroup {
+                        StyledButtonGroup {
                             Layout.alignment: Qt.AlignHCenter
                             model: PersonalizationConfig.transitionTypes.slice(5, 9)
                             currentValue: PersonalizationConfig.wallpaperTransitionType
