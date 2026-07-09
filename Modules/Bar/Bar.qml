@@ -3,11 +3,13 @@ import Quickshell.Widgets
 import Quickshell.Wayland
 import QtQuick
 import QtQuick.Layouts
+import qs.Modules.Bar.SysButton
 import qs.Modules.Bar.Workspaces
 import qs.Modules.Bar.ActiveWindow
 import qs.Modules.Bar.Tray
 import qs.Modules.Bar.PowerButton
 import qs.Modules.Bar.SysMonitor
+import qs.Modules.Bar.BarBattery
 import qs.Modules.Bar.QuickSettings
 import qs.Common
 
@@ -51,6 +53,7 @@ Variants {
                 height: implicitHeight
                 spacing: 8
 
+                SysButton {}
                 Workspaces { screenName: barWindow.screen.name }
                 SidebarButton {}
                 ActiveWindow {}
@@ -68,6 +71,7 @@ Variants {
                 Tray { screen: barWindow.screen }
                 SysMonitor { Layout.alignment: Qt.AlignVCenter }
                 
+                BarBattery { Layout.alignment: Qt.AlignVCenter }
 
                 QuickSettings {
                     screen: barWindow.screen
